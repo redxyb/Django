@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>add_book</title>
+</head>
+<body>
+<div>
+    <h1>添加书籍</h1>
+    <form method="post">
+        <label>书名：</label><input type="text" name="book_name" placeholder="请输入你要添加的书名"><br>
+        <label>出版日期：</label><input type="text" name="book_pub_date" placeholder="请输入书的出版日期"><br>
+        <label>阅读量：</label><input type="text" name="book_readcount" placeholder="请输入书的阅读量"><br>
+        <label>评论量：</label><input type="text" name="book_commentcount" placeholder="请输入书的评论量"><br>
+        <input style="color: red" href="{% url 'create_books' %}" type="submit" value="添加"><br>
+    </form>
+    <a style="color: red">{{ error }}</a><br>
+    <a href="{% url 'booklist_page' %}">返回到书籍列表页</a>
+</div>
+<div>
+    <a style="color: crimson" href="">从文件中添加书本</a>
+</div>
+</body>
+</html>

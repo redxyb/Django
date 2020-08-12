@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>书籍信息</title>
+    <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
+    <script src="../../static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.css">
+	<script src="../../static/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					{{ book.name }}<!--<small>Subtext for header</small>-->
+				</h1>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-8 column">
+					<img alt="140x140" src="http://cdn.ibootstrap.cn/lorempixel.com/140/140/default.jpg" class="img-circle" />
+					{# 通过关系找到本书的所有英雄 #}
+                    {% for i in people %}
+                        {# 输出英雄的名字及描述 #}
+                    <li style="background: aliceblue; font-size: 30px">{{ i.name }}--{{ i.gender }}--{{ i.description }}</li>
+                    {% endfor %}
+					<h3>
+						内心想法
+					</h3>
+					<div class="media well">
+						 <a href="#" class="pull-left"><img src="http://cdn.ibootstrap.cn/lorempixel.com/64/64/default.jpg" class="media-object" alt='' /></a>
+						<div class="media-body">
+							<h4 class="media-heading">
+								Nested media heading
+							</h4> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+							<div class="media">
+								 <a href="#" class="pull-left"><img src="http://cdn.ibootstrap.cn/lorempixel.com/64/64/default.jpg" class="media-object" alt='' /></a>
+								<div class="media-body">
+									<h4 class="media-heading">
+										Nested media heading
+									</h4> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 column">
+					<h3 class="text-left">
+						推荐榜
+					</h3>
+					<blockquote>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
+						</p> <small>Someone famous <cite>Source Title</cite></small>
+					</blockquote>
+					<blockquote>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
+						</p> <small>Someone famous <cite>Source Title</cite></small>
+					</blockquote>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
