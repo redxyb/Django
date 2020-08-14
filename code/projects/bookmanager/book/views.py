@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import re
 from django.template import loader, RequestContext
 
-from book.models import BookInfo, PeopleInfo, User
+from book.models import BookInfo, UserBooks, User, BookComment
 
 # Create your views here.
 
@@ -98,6 +98,9 @@ def change_password(request):
     if request.method == 'GET':
         return render(request, 'people/change_password.html', {'error': ''})
     if request.method == 'POST':
+        user = request.user
+        user.is_authenticated
+        print(user) #for test
         if User.is_login == True:
             old_password = request.POST.get('old_password')
             new_password = request.POST.get('new_password')
@@ -138,8 +141,7 @@ def detail(request, bid):
     #查询所有图书
     books = BookInfo.objects.get(id=int(bid))
     #查找book图书中的所有人物
-    people = books.peopleinfo_set.all()
-    return render(request, 'book/book_detail.html', {'book': books, 'people': people})
+    return render(request, 'book/book_detail.html', {'book': books})
 
 def delete_books(request, id):
     '''删除书籍'''

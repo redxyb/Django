@@ -22,6 +22,8 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf.urls import url
 from book import views, urls
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
@@ -35,5 +37,4 @@ urlpatterns = [
     url('detail(\d+)/', views.detail),#好像url才能使用正则匹配
     re_path(r'booklist.html/', include('book.urls')),
     # re_path(r'find_password.html/', include('book.urls')),
-
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)#

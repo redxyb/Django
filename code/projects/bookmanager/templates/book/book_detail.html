@@ -14,19 +14,17 @@
 	<div class="row clearfix">
 		<div class="col-md-12 column">
 			<div class="page-header">
-				<h1>
-					{{ book.name }}<!--<small>Subtext for header</small>-->
-				</h1>
+				<h1 align="center">{{ book.book_name }}</h1>
 			</div>
 			<div class="row clearfix">
 				<div class="col-md-8 column">
-					<img alt="140x140" src="http://cdn.ibootstrap.cn/lorempixel.com/140/140/default.jpg" class="img-circle" />
-					{# 通过关系找到本书的所有英雄 #}
-                    {% for i in people %}
-                        {# 输出英雄的名字及描述 #}
-                    <li style="background: aliceblue; font-size: 30px">{{ i.name }}--{{ i.gender }}--{{ i.description }}</li>
-                    {% endfor %}
-					<h3>
+					<img alt="140x140" src="../../media/{{ book.book_image }}" class="img-circle" />
+                    <li style="background: aliceblue; font-size: 30px">作者：{{ book.book_author }}</li><br>
+                    <li style="background: aliceblue; font-size: 30px">出版社：{{ book.book_pub }}</li><br>
+                    <li style="background: aliceblue; font-size: 30px">出版日期：{{ book.book_pubdate }}</li><br>
+                    <li style="background: aliceblue; font-size: 25px">简介：{{ book.description }}</li>
+					<li style="color: red; font-size: 25px">书籍链接：{{ book.book_url }}</li>
+                    <h3>
 						内心想法
 					</h3>
 					<div class="media well">

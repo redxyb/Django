@@ -88,7 +88,7 @@ DATABASES = {
         'PORT': '3306',  # 数据库端口
         'USER': 'root',   # 数据库用户名
         'PASSWORD': '123456',   # 数据库用户密码
-        'NAME': 'book',    # 数据库名字
+        'NAME': 'notebook',    # 数据库名字
     }
 }
 
@@ -133,3 +133,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/') # 设置静态文件路径为主目录下的media文件夹# 设置静态文件路径为主目录下的media文件夹
