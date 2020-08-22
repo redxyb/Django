@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
+    <script src="../../static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.css">
+	<script src="../../static/js/bootstrap.min.js"></script>
+    <script src="../../static/js/kefu.js"></script>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1 align="center">
+					These are the books I have collected
+				</h1>
+			</div>
+            <table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>
+							序号
+						</th>
+						<th>
+							书名
+						</th>
+						<th>
+							收藏时间
+						</th>
+                        <th>
+							操作
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+                {% for book in books %}
+					<tr >
+						<td >
+                            {{ forloop.counter }}
+						</td>
+						<td class="info">
+							{{ book.book_name }}
+						</td>
+						<td class="warning">
+							{{ book.add_time | date:'Y-m-d H:i:s'}}
+						</td>
+						<td>
+							<a href="detail{{ book.book_name_id }}">详情</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<a style="color:red;" href="delete_personal_books{{ book.id }}">删除</a>
+						</td>
+					</tr>
+                {% endfor %}
+				</tbody>
+			</table>
+
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+        var kefu = new Kefu1({
+            index: "{% url 'home_page' %}",
+            tel: "15616697909",//电话号码
+            qq: "774472695",//在线QQ
+        });
+    </script>
+</body>
+</html>

@@ -20,13 +20,13 @@
 						 <a data-target=".navbar-responsive-collapse" data-toggle="collapse" class="btn btn-navbar"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a> <a href="#" class="brand">电子书库</a>
 						<div class="nav-collapse collapse navbar-responsive-collapse">
 							<ul class="nav">
-								<li class="active">
+								<li>
 									 <a href="{% url 'home_page' %}">主页</a>
 								</li>
 								<li >
 									 <a href="{% url 'book_type0' %}">编程库</a>
 								</li>
-								<li>
+								<li class="active">
 									 <a href="{% url 'book_type1' %}">其他库</a>
 								</li>
 								<li>
@@ -132,9 +132,8 @@
 		<p>CopyRight © 2020 电子书库 All Rights Reserved</p>
 		<p>邮箱：1085652834@qq.com</p>
 </div>
-
 </body>
-<script>
+<script type="text/javascript">
     function remind() {
         alert("请先登录!")
     }

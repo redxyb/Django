@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>add_book</title>
+    <script src="../../static/js/kefu1.js"></script>
 </head>
 <body>
 <div>
     <h1>添加书籍</h1>
     <form method="post">
+        {% csrf_token %}
         <label>书名：</label><input type="text" name="book_name" placeholder="请输入你要添加的书名"><br>
         <label>出版日期：</label><input type="text" name="book_pub_date" placeholder="请输入书的出版日期"><br>
         <label>阅读量：</label><input type="text" name="book_readcount" placeholder="请输入书的阅读量"><br>
@@ -20,5 +22,20 @@
 <div>
     <a style="color: crimson" href="">从文件中添加书本</a>
 </div>
+<script>
+        var kefu = new Kefu1({
+            index: "{% url 'home_page' %}",
+            tel: "15616697909",//电话号码
+            qq: "774472695",//在线QQ
+            wechatPerson: {
+                state: true,// true是开启个人微信二维码, false不开启
+                imgURL: "./imgs/2wm.png"
+            },
+            wechatofficial: {
+                state: true,// true是开启微信公众号二维码, false不开启
+                imgURL: "./imgs/2wm.png"
+            }//微信公众号
+        });
+    </script>
 </body>
 </html>

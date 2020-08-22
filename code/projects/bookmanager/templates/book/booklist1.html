@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>Electronic books</title>
     <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
-    <script src="../static/js/jquery-1.12.4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-combined.min.css">
-	<script src="../static/js/bootstrap.min.js"></script>
-    <script src="../static/js/kefu1.js"></script>
+    <script src="../../static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap-combined.min.css">
+	<script src="../../static/js/bootstrap.min.js"></script>
+    <script src="../../static/js/kefu1.js"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -20,13 +20,13 @@
 						 <a data-target=".navbar-responsive-collapse" data-toggle="collapse" class="btn btn-navbar"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a> <a href="#" class="brand">电子书库</a>
 						<div class="nav-collapse collapse navbar-responsive-collapse">
 							<ul class="nav">
-								<li class="active">
-									 <a href="{% url 'home_page' %}">主页</a>
-								</li>
-								<li >
-									 <a href="{% url 'book_type0' %}">编程库</a>
+								<li>
+									 <a href="{% url 'booklist_page' %}">主页</a>
 								</li>
 								<li>
+									 <a href="{% url 'book_type0' %}">编程库</a>
+								</li>
+								<li class="active">
 									 <a href="{% url 'book_type1' %}">其他库</a>
 								</li>
 								<li>
@@ -43,13 +43,38 @@
 								<!--<li>
 									 <a href="#">右边链接</a>
 								</li>-->
-								<li class="divider-vertical"></li><!--竖直分界线-->
-                                <li>
-									 <a href="{% url 'register_page' %}">注册</a>
+								<li class="divider-vertical">
 								</li>
-                                <li class="divider-vertical"></li>
-								<li>
-									 <a href="{% url 'login_page' %}">登录</a>
+                                <img src="../../media/user_images/{{ user.head_image }}" width="40" height="40"/>
+								<li class="dropdown">
+                                    {% if user.grade == 0 %}
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">初级用户:{{ user.username }}<strong class="caret"></strong></a>
+                                    {% elif user.grade == 1 %}
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">中级用户:{{ user.username }}<strong class="caret"></strong></a>
+                                    {% elif user.grade == 2 %}
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">高级用户:{{ user.username }}<strong class="caret"></strong></a>
+                                    {% endif %}
+									<ul class="dropdown-menu">
+										<li>
+                                            <a href="{% url 'personal_information_page' %}">个人信息</a>
+										</li>
+										<li>
+											 <a href="{% url 'personal_books_page' %}">个人书库<span style="color: red" class="badge pull-right">{{count}}</span></a>
+										</li>
+                                        {% if user.is_admin == 1 %}
+                                        <li>
+                                            <a href="{% url 'add_book_page' %}">添加书籍</a>
+                                        </li>
+                                        {% endif %}
+                                        <li>
+											 <a href="{% url 'changepassword_page' %}">修改密码</a>
+										</li>
+										<li class="divider">
+										</li>
+										<li>
+											 <a href="{% url 'login_out' %}">退出登录</a>
+										</li>
+									</ul>
 								</li>
 							</ul>
 						</div>
@@ -86,8 +111,11 @@
 								{{ book.book_author}}&nbsp;&nbsp;{{ book.book_pub }}&nbsp;&nbsp;{{ book.book_pubdate }}
 							</p>
 							<p>
-                                <button class="btn btn-primary" id="btn" onclick="remind()">详情</button>
-                                <!--<button style="color: red" class="btn" onclick="remind()">删除</button>-->
+                                <a class="btn btn-primary" href="detail{{ book.id }}">详情</a>
+                                <a class="btn btn-primary" href="add{{ book.id }}">收藏</a>
+                                {% if user.is_admin == 1 %}
+                                    <a style="color: red" class="btn" href="delete_book{{ book.id }}">删除</a>
+                                {% endif %}
 							</p>
 						</div>
 					</div>
@@ -132,16 +160,12 @@
 		<p>CopyRight © 2020 电子书库 All Rights Reserved</p>
 		<p>邮箱：1085652834@qq.com</p>
 </div>
-
-</body>
 <script>
-    function remind() {
-        alert("请先登录!")
-    }
-    var kefu = new Kefu1({
+        var kefu = new Kefu1({
             index: "{% url 'home_page' %}",
             tel: "15616697909",//电话号码
             qq: "774472695",//在线QQ
         });
-</script>
+    </script>
+</body>
 </html>

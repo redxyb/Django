@@ -7,20 +7,29 @@ from datetime import date
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-import re
-from django.template import loader, RequestContext
-
+import re, time, socket
 from book.models import BookInfo, UserBooks, User, BookComment
+
+from django.views.decorators.csrf import csrf_exempt
+# @csrf_protect：为当前函数强制设置防跨站请求伪造功能，即便settings中没有设置全局中间件
+# @csrf_exempt：取消当前函数防跨站请求伪造功能，即便settings中设置了全局中间件
 
 # Create your views here.
 
 def home_page(request):
     '''主页'''
+    username = request.COOKIES.get('username')
     title = 'homepage'
     books = BookInfo.objects.all()
-    #print(books) #for test
-    content = {'books': books, 'title': title}
-    return render(request, 'home_page.html', content)
+    if username != None:
+        user = User.objects.get(username=username)
+        book = UserBooks.objects.filter(username_id=user.id)
+        count = len(book)
+        return render(request, 'book/booklist.html', {'books': books, 'user': user, 'count': count})
+    if username == None:
+        content = {'books': books, 'title': title}
+        return render(request, 'home_page.html', content)
+
 
 def login_page(request):
     '''登录'''
@@ -35,9 +44,12 @@ def login_page(request):
             Acountinfo = User.objects.filter(username=username)
             for user in Acountinfo:
                 if user.password == password:
-                    User.is_login = True
-                    User.login_name = user.username
-                    return HttpResponseRedirect("/booklist.html/")
+                    # User.is_login = True
+                    # User.login_name = user.username
+                    #设置cookie
+                    response = HttpResponseRedirect("/booklist.html/")
+                    response.set_cookie('username', username, 900)
+                    return response
                 if user.password != password:
                     return render(request, 'people/login.html', {'error': '密码错误'})
             if not Acountinfo:
@@ -49,12 +61,14 @@ def register(request):
         return render(request, 'people/register.html', {'error': ''})
     if request.method == 'POST':
         username = request.POST.get('username')
+        gender = request.POST.get('sex')
+        #print(gender) # for test
         password = request.POST.get('password')
         email = request.POST.get('email')
         phonenum = request.POST.get('phonenum')
-        if username == '' or password == '' or email == '':
+        if username == '' or password == '' or email == '' or gender == '':
             return render(request, 'people/register.html', {'error': '请将信息填写完整'})
-        if username != '' and password != '' and email != '':
+        if username != '' and password != '' and email != '' and gender != '':
             #记得查重：已经存在的用户不能再注册
             users = User.objects.filter(username=username)
             if len(users) != 0:
@@ -66,12 +80,15 @@ def register(request):
                     # 将用户数据存入数据库
                     User.objects.create(
                         username=username,
+                        gender=gender,
                         password=password,
                         email=email,
                         phonenum=phonenum, )
-                    User.is_login = True
-                    User.login_name = username
-                    return HttpResponseRedirect("/booklist.html/")
+                    # User.is_login = True
+                    # User.login_name = username
+                    response = HttpResponseRedirect("/booklist.html/")
+                    response.set_cookie('username', username, 3600)
+                    return response
                 if not ret:
                     return render(request, 'people/register.html', {'error': '邮箱不合法'})
 
@@ -96,61 +113,110 @@ def find_password(request):
 def change_password(request):
     '''更改密码'''
     if request.method == 'GET':
-        return render(request, 'people/change_password.html', {'error': ''})
+        return render(request, 'people/change_password.html')
     if request.method == 'POST':
-        user = request.user
-        user.is_authenticated
-        print(user) #for test
-        if User.is_login == True:
+        username = request.COOKIES.get('username')
+        if username != None:
+            user = User.objects.get(username=username)
+            # print(user) #for test
             old_password = request.POST.get('old_password')
             new_password = request.POST.get('new_password')
-            if old_password != '' and new_password != '':
+            if old_password != None and new_password != None:
                 if old_password != new_password:
-                    name = User.login_name
-                    user = User.objects.get(username=name)
+                    # name = User.login_name
+                    # user = User.objects.get(username=name)
                     if old_password == user.password:
                         user.password = new_password
                         user.save()
-                        User.is_login = False
-                        return render(request, 'people/change_password.html', {'error': '密码修改成功'})
+                        response = HttpResponseRedirect('/change_password.html/')
+                        response.delete_cookie('username')
+                        return response
                     else:
                         return render(request, 'people/change_password.html', {'error': '你输入的当前密码错误'})
                 if old_password == new_password:
                     return render(request, 'people/change_password.html', {'error': '新密码不能与旧密码一致'})
             else:
                 return render(request, 'people/change_password.html', {'error': '新旧密码不能为空'})
-        if User.is_login == False:
+        if username == None:
             return redirect('login_page')
 
 def booklist(request):
-    if User.is_login == True:
-        name = User.login_name
+    name = request.COOKIES.get('username')
+    #print(name)#for test
+    if name != None:
+        user = User.objects.get(username=name)
         #print(name) #for test
         #查询数据库书籍列表数据
         books = BookInfo.objects.all()
+        personal_book = UserBooks.objects.filter(username_id=user.id)
+        count = len(personal_book)
         #构造上下文
-        content = {'title': 'Electronic books', 'books': books, 'name': name}
+        content = {'books': books, 'user': user, 'count': count}
         #数据交给模板处理，处理完后通过视图响应给客户端
         return render(request, 'book/booklist.html', content)
-    if User.is_login == False:
+    if name == None:
         # return HttpResponse('you have not login!!!')
-        return redirect('/')
+        return redirect('login_page')
 
 def detail(request, bid):
     '''展示书籍详细信息'''
-    #查询所有图书
-    books = BookInfo.objects.get(id=int(bid))
-    #查找book图书中的所有人物
-    return render(request, 'book/book_detail.html', {'book': books})
+    username = request.COOKIES.get('username')
+    if username != None:
+        books = BookInfo.objects.get(id=int(bid))
+        #print(username) #for test
+        i = User.objects.get(username=username).id
+        if request.method == 'POST':
+            content = request.POST.get('content')
+            # username_id = request.user.id
+            # print(username_id)
+            comment_time = time.ctime()
+            ip_addr = socket.gethostbyname(socket.gethostname())
+            comment = BookComment(
+                content=content,
+                username_id=i,
+                book_name_id=int(bid),
+                comment_time=comment_time,
+                ip_addr=ip_addr
+            )
+            comment.save()
+            comments = BookComment.objects.filter(book_name_id=int(bid))
+            count = len(comments)
+            return render(request, 'book/book_detail.html', {'book': books, 'count': count, 'comments': comments})
+        #查找所有关于本书的评论
+        comments = BookComment.objects.filter(book_name_id=int(bid))
+        count = len(comments)
+        return render(request, 'book/book_detail.html', {'book': books, 'count': count, 'comments': comments})
+    if username == None:
+        return redirect('login_page')
+
+def add(request, id):
+    '''添加书本到个人书库'''
+    username = request.COOKIES.get('username')
+    if username != None:
+        user = User.objects.get(username=username)
+        userbook = UserBooks(
+            username_id=user.id,
+            book_name_id=id,
+        )
+        userbook.save()
+        book = BookInfo.objects.all()
+        return redirect('booklist_page')
+    if username == None:
+        return redirect('login_page')
 
 def delete_books(request, id):
-    '''删除书籍'''
+    '''彻底删除书籍:还需要删除对应的评论'''
     BookInfo.delete_book(id)
     books = BookInfo.objects.all()
     # 构造上下文
     content = {'title': '图书列表', 'books': books}
     # 数据交给模板处理，处理完后通过视图响应给客户端
     return render(request, 'book/booklist.html', content)
+
+def delete_personal_books(request, id):
+    '''删除个人书库中的书籍'''
+    UserBooks.delete_book(id)
+    return redirect('personal_books_page')
 
 def create_books(request):
     '''添加书籍'''
@@ -171,6 +237,92 @@ def create_books(request):
                 return render(request, 'book/add_book.html', {'error': '书本添加完成'})
         if len(books) != 0:
             return render(request, 'book/add_book.html', {'error': '该书本已经存在'})
+
+def personal_information_page(request):
+    username = request.COOKIES.get('username')
+    # print(username) #for test
+    user = User.objects.get(username=username)
+    # gender = user.gender
+    email = user.email
+    phonenum = user.phonenum
+    # print(email, phonenum) #for test
+    if request.method == 'POST':
+        username1 = request.POST.get('username')
+        gender1 = request.POST.get('sex')
+        email1 = request.POST.get('email')
+        # print(email1) #for test
+        phonenum1 = request.POST.get('phonenum')
+        if username1 == '':
+            user.username = username
+        else:
+            user.username = username1
+        if email1 == '':
+            user.email = email
+        else:
+            user.email = email1
+        if phonenum1 == '':
+            user.phonenum = phonenum
+        else:
+            user.phonenum = phonenum1
+        user.gender = gender1
+        user.save()
+        user = User.objects.get(username=username)
+        return render(request, 'people/personal_information.html', {'user': user})
+    return render(request, 'people/personal_information.html', {'user': user})
+
+def personal_books(request):
+    username = request.COOKIES.get('username')
+    if username != None:
+        user = User.objects.get(username=username)
+        books = UserBooks.objects.filter(username_id=user.id)
+        return render(request, 'book/personal_books.html', {'books': books})
+    if username == None:
+        return redirect('login_page')
+
+def login_out(request):
+    User.login_name = ''
+    response = HttpResponseRedirect('/')
+    response.delete_cookie('username')
+    #这里要清楚cookies
+    return response
+
+def book_type0(request):
+    '''编程类'''
+    books = BookInfo.objects.filter(book_type=0)
+    username = request.COOKIES.get('username')
+    if username != None:
+        user = User.objects.get(username=username)
+        book = UserBooks.objects.filter(username_id=user.id)
+        count = len(book)
+        return render(request, 'book/booklist0.html', {'user': user, 'books': books, 'count': count})
+    if username == None:
+        return render(request, 'home_page0.html', {'books': books})
+
+def book_type1(request):
+    '''其他类'''
+    books = BookInfo.objects.filter(book_type=1)
+    username = request.COOKIES.get('username')
+    if username != None:
+        user = User.objects.get(username=username)
+        book = UserBooks.objects.filter(username_id=user.id)
+        count = len(book)
+        return render(request, 'book/booklist1.html', {'user': user, 'books': books, 'count': count})
+    if username == None:
+        return render(request, 'home_page1.html', {'books': books})
+
+def search(request):
+    '''先写简单的书名（模糊）搜索'''
+    if request.method == 'GET':
+        requirement = request.GET.get('requirement')
+        # print(requirement)#for test
+        books = BookInfo.objects.filter(book_name__contains=requirement)
+        username = request.COOKIES.get('username')
+        if username == None:
+            return render(request, 'home_page.html', {'books': books})
+        if username != None:
+            user = User.objects.get(username=username)
+            count = len(UserBooks.objects.filter(username_id=user.id))
+            return render(request, 'book/booklist.html', {'books': books, 'user': user, 'count': count})
 
 def kobe(request):
     return render(request, 'kobe.html')

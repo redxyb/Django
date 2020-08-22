@@ -33,8 +33,16 @@ urlpatterns = [
     path('booklist.html/', views.booklist, name='booklist_page'),
     path('register.html/', views.register, name='register_page'),
     path('find_password.html/', views.find_password, name='findpassword_page'),
-    path('change_password.html', views.change_password, name='changepassword_page'),
+    path('change_password.html/', views.change_password, name='changepassword_page'),
+    path('personal_information.html/', views.personal_information_page, name='personal_information_page'),
+    path('personal_books.html/', views.personal_books, name='personal_books_page'),
+    path('book_type0', views.book_type0, name='book_type0'),
+    path('book_type1', views.book_type1, name='book_type1'),
+    path('add_book.html', views.create_books, name='add_book_page'),
+    url('login_out/', views.login_out, name='login_out'),
     url('detail(\d+)/', views.detail),#好像url才能使用正则匹配
+    url('add(\d+)/', views.add),
+    url(r'^search/$', views.search, name='search'),
+    re_path(r'personal_books.html/', include('book.urls')),
     re_path(r'booklist.html/', include('book.urls')),
-    # re_path(r'find_password.html/', include('book.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)#
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -10,6 +10,7 @@ from . import views
 urlpatterns = [
     path('kobe.html/', views.kobe, name='kobe_page'),
     url('delete_book(\d+)', views.delete_books),
+    url('delete_personal_books(\d+)', views.delete_personal_books),
     url('add_book.html/', views.create_books, name='create_books')
     # path('detail.html/', views.detail, name='detail_page')
     # path('login.html/', views.login_page, name='login_page'),

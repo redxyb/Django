@@ -57,14 +57,19 @@ class BookInfo(models.Model):
     @staticmethod
     #删除模型，接收参数为要删除的id
     def delete_book(id):
+        #删除与书籍对应的评论
+        comment = BookComment.objects.get(book_name_id=int(id))
+        comment.delete()
         book = BookInfo.objects.get(id=id)
         book.delete()
+
+
 
 #准备用户表信息的模块
 class User(models.Model):
     GENDER_CHOICES = (
-        (0, 'male'),
-        (1, 'female')
+        (1, 'male'),#男
+        (0, 'female')#女
     )
     GRADE_CHOICES = (
         (0, 'VIP'),
@@ -101,7 +106,7 @@ class UserBooks(models.Model):
     )
     username = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户名')
     book_name = models.ForeignKey(BookInfo, on_delete=models.CASCADE, verbose_name='书籍名称')#外键
-    add_time = models.DateField(auto_now_add=True, verbose_name='添加时间')
+    add_time = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
     is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
 
     class Meta:
@@ -112,12 +117,17 @@ class UserBooks(models.Model):
     def __str__(self):
         return self.book_name
 
+    def delete_book(id):
+        #删除与书籍对应的评论
+        book = UserBooks.objects.get(id=id)
+        book.delete()
+
 #准备书籍评论表信息的模块
 class BookComment(models.Model):
     book_name = models.ForeignKey(BookInfo, on_delete=models.CASCADE)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    comment_time = models.DateField(auto_now_add=True)
+    comment_time = models.DateTimeField(auto_now_add=True)
     ip_addr = models.GenericIPAddressField(verbose_name='评论者的IP')
 
     class Meta:
@@ -127,3 +137,6 @@ class BookComment(models.Model):
 
     def __str__(self):
         return self.content
+
+    def __iter__(self):
+        return [self.book_name, self.ip_addr, self.comment_time, self.username, self.content]
