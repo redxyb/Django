@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <title>{{ title }}</title>
     <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
-    <script src="../../static/js/jquery-1.12.4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.css">
-	<script src="../../static/js/bootstrap.min.js"></script>
-    <script src="../../static/js/kefu.js"></script>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+	<script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/kefu1.js"></script>
 </head>
 <body>
 <div class="container">
@@ -63,7 +63,7 @@
 </div>
 <script>
         var kefu = new Kefu1({
-            index: "{% url 'home_page' %}",
+            index: "{% url 'book:home_page' %}",
             tel: "15616697909",//电话号码
             qq: "774472695",//在线QQ
         });

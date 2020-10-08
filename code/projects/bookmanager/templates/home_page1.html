@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <title>{{ title }}</title>
     <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
-    <script src="../static/js/jquery-1.12.4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-combined.min.css">
-	<script src="../static/js/bootstrap.min.js"></script>
-    <script src="../static/js/kefu1.js"></script>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-combined.min.css">
+	<script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/kefu1.js"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -21,16 +21,16 @@
 						<div class="nav-collapse collapse navbar-responsive-collapse">
 							<ul class="nav">
 								<li>
-									 <a href="{% url 'home_page' %}">主页</a>
+									 <a href="{% url 'book:home_page' %}">主页</a>
 								</li>
 								<li >
-									 <a href="{% url 'book_type0' %}">编程库</a>
+									 <a href="{% url 'book:book_type0' %}">编程库</a>
 								</li>
 								<li class="active">
-									 <a href="{% url 'book_type1' %}">其他库</a>
+									 <a href="{% url 'book:book_type1' %}">其他库</a>
 								</li>
 								<li>
-									<form class="navbar-form navbar-left" role="search" method="get" action="/search/">
+									<form class="navbar-form navbar-left" role="search" method="get" action="/book/search/">
                                         {% csrf_token %}
 										<div class="form-group">
 											<input type="text" class="form-control" name="requirement"/>
@@ -45,11 +45,11 @@
 								</li>-->
 								<li class="divider-vertical"></li><!--竖直分界线-->
                                 <li>
-									 <a href="{% url 'register_page' %}">注册</a>
+									 <a href="{% url 'book:register_page' %}">注册</a>
 								</li>
                                 <li class="divider-vertical"></li>
 								<li>
-									 <a href="{% url 'login_page' %}">登录</a>
+									 <a href="{% url 'book:login_page' %}">登录</a>
 								</li>
 							</ul>
 						</div>
@@ -61,14 +61,8 @@
 				<li class="active">
 					 <a href="#">全部图书</a>
 				</li>
-				<li>
-					 <a href="#">热评榜</a>
-				</li>
-				<li class="disabled">
-					 <a href="#">收藏榜</a>
-				</li>
 			</ul>
-            {% for book in books %}
+            {% for book in ebooks %}
 			<ul class="thumbnails">
 				<li class="span4">
 					<div class="thumbnail">
@@ -94,28 +88,42 @@
 				</li>
                 {% endfor %}
 			</ul>
-			<div class="pagination pagination-centered">
-				<ul>
-					<li>
-						 <a href="#">上一页</a>
-					</li>
-					<li>
-						 <a href="#">1</a>
-					</li>
-					<li>
-						 <a href="#">2</a>
-					</li>
-					<li>
-						 <a href="#">3</a>
-					</li>
-                    <li>
-						 <a href="#">...</a>
-					</li>
-					<li>
-						 <a href="#">下一页</a>
-					</li>
-				</ul>
-			</div>
+			<!-- 页码导航 -->
+                <div class="pagination row" align="center">
+                    <div class="m-auto">
+                        <span class="step-links">
+                            <!-- 如果不是第一页，则显示上翻按钮 -->
+                            {% if ebooks.has_previous %}
+                                <a href="?page=1" class="btn btn-success">
+                                    &laquo; 1
+                                </a>
+                                <span>...</span>
+                                <a href="?page={{ ebooks.previous_page_number }}"
+                                   class="btn btn-secondary"
+                                >
+                                    {{ ebooks.previous_page_number }}
+                                </a>
+                            {% endif %}
+
+                            <!-- 当前页面 -->
+                            <span class="current btn btn-danger btn-lg">
+                                {{ ebooks.number }}
+                            </span>
+
+                            <!-- 如果不是最末页，则显示下翻按钮 -->
+                            {% if ebooks.has_next %}
+                                <a href="?page={{ ebooks.next_page_number }}"
+                                   class="btn btn-secondary">
+                                    {{ ebooks.next_page_number }}
+                                </a>
+                                <span>...</span>
+                                <a href="?page={{ ebooks.paginator.num_pages }}"
+                                   class="btn btn-success">
+                                    {{ ebooks.paginator.num_pages }} &raquo;
+                                </a>
+                            {% endif %}
+                        </span>
+                    </div>
 		</div>
 	</div>
 </div>
@@ -138,7 +146,7 @@
         alert("请先登录!")
     }
     var kefu = new Kefu1({
-            index: "{% url 'home_page' %}",
+            index: "{% url 'book:home_page' %}",
             tel: "15616697909",//电话号码
             qq: "774472695",//在线QQ
         });

@@ -5,10 +5,53 @@
     <meta charset="UTF-8">
     <title>书籍信息</title>
     <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
-    <script src="../../static/js/jquery-1.12.4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.css">
-	<script src="../../static/js/bootstrap.min.js"></script>
-    <script src="../../static/js/kefu1.js"></script>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+	<script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/kefu1.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.comment.js" ></script>
+<style>
+p{ margin:0; padding:0;}
+.login-put {
+clear: both;
+line-height: 36px;
+margin-bottom: 20px;
+overflow: hidden;
+width: 500px;
+}
+.login-put label {
+color: #8c8686;
+float: left;
+font-size: 14px;
+height: 36px;
+line-height: 36px;
+text-align: right;
+width: 120px;
+}
+#form1{ float:left; width:320px}
+#form1 label {
+float: left;
+text-align: left;
+width: 80px;
+}
+input {
+cursor: pointer;
+vertical-align: middle;
+}
+.login-put #div1 {
+padding-left: 120px;
+}
+.login-put #div1 input {
+border: 1px solid #dddddd;
+color: #999999;
+float: left;
+height: 36px;
+line-height: 36px;
+margin-right: 10px;
+padding: 0 5px;
+width: 190px;
+}
+</style>
 </head>
 <body>
 <div class="container">
@@ -39,13 +82,53 @@
                     </form>
                     <hr>
                     <h4 style="color: blue">评论<span style="color: red" class="badge pull-left">{{count}}</span></h4>
+
 					{% for comment in comments %}
+                        <div id="div1" style="display:none">
+                                        <label>
+                                            <input class="text01" name="rely_content" type="text"/><a>发送</a>
+                                        </label>
+                                    </div>
                         <blockquote>
                             <div class="media well">
                                 <!--<a href="#" class="pull-left"><img src="../../media/user_images/head_image.jpg" class="media-object" alt="140x140" /></a>-->
                                 <div class="media-body">
-                                    <small>{{ comment.username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comment.comment_time | date:"Y-m-d H:i:s"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <a style="color: blue">回复</a></small>{{ comment }}
+                                    <h4 class="media-heading">
+
+                                        <span style="font-size: x-small; ">{{ comment.username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comment.comment_time | date:"Y-m-d H:i:s"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <!--<input type="button" value="回复" onClick="show()"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            {% if user.is_admin == 1 %}
+                                                <a style="color: red" href="delete_comment{{ comment.id }}">删除</a>
+                                            {% endif %}
+                                            {% if user.username == comment.username %}
+                                                <a style="color: red" href="delete_comment{{ comment.id }}">删除</a>
+                                            {% endif %}!-->
+                                        </span>
+                                    </h4>{{ comment.content }}
+
+                                    {% for child_comment in child_comments %}
+                                        {% if child_comment.parent_id == comment.id %}
+                                        <blockquote>
+                                            <div class="media-body">
+                                                <div class="media">
+                                                    <a href="#" class="pull-left"></a>
+                                                    <div class="media-body">
+                                                        <h4 class="media-heading">
+                                                            <span style="font-size: x-small; ">{{ child_comment.username }}回复{{ comment.username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ child_comment.comment_time | date:"Y-m-d H:i:s"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <!--{% if user.is_admin == 1 %}
+                                                                <a style="color: red" href="delete_comment{{ child_comment.id }}">删除</a>
+                                                            {% endif %}
+                                                            {% if user.id == child_comment.username_id %}
+                                                                <a style="color: red" href="delete_comment{{ child_comment.id }}">删除</a>
+                                                            {% endif %}-->
+                                                            </span>
+                                                        </h4>{{ child_comment }}
+                                                    </div>
+                                                </div>
+                                             </div>
+                                        </blockquote>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
                         </blockquote>
@@ -69,13 +152,25 @@
 			</div>
 		</div>
 	</div>
+
 </div>
 <script>
-        var kefu = new Kefu1({
-            index: "{% url 'home_page' %}",
-            tel: "15616697909",//电话号码
-            qq: "774472695",//在线QQ
-        });
-    </script>
+    var kefu = new Kefu1({
+        index: "{% url 'book:home_page' %}",
+        tel: "15616697909",//电话号码
+        qq: "774472695",//在线QQ
+    });
+    function show()
+    {
+        var value = document.getElementById("div1").style.display;
+        if(value=="none")
+        {
+            document.getElementById("div1").style.display="block";
+        }
+        else
+            document.getElementById("div1").style.display="none";
+    }
+</script>
+
 </body>
 </html>

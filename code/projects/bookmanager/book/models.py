@@ -42,12 +42,16 @@ class BookInfo(models.Model):
 
     @staticmethod
     #创建模型方法，接收参数为属性赋值
-    def create_book(name, pub_date, readcount, commentcount):
+    def create_book(book_name, book_image, book_url, description, book_author, book_type, book_pub, book_pubdate):
         book = BookInfo.objects.create(
-            name=name,
-            pub_date=pub_date,
-            readcount=readcount,
-            commentcount=commentcount,
+            book_name=book_name,
+            book_image=book_image,
+            book_url=book_url,
+            description=description,
+            book_author=book_author,
+            book_type=book_type,
+            book_pub=book_pub,
+            book_pubdate=book_pubdate,
             is_delete=False
         )
         #将数据插入数据表
@@ -58,9 +62,9 @@ class BookInfo(models.Model):
     #删除模型，接收参数为要删除的id
     def delete_book(id):
         #删除与书籍对应的评论
-        comment = BookComment.objects.get(book_name_id=int(id))
+        comment = BookComment.objects.filter(book_name_id=int(id))
         comment.delete()
-        book = BookInfo.objects.get(id=id)
+        book = BookInfo.objects.filter(id=id)
         book.delete()
 
 
@@ -78,7 +82,7 @@ class User(models.Model):
     )
     username = models.CharField(max_length=20, verbose_name='用户名')
     password = models.CharField(max_length=20, verbose_name='用户密码')
-    head_image = models.ImageField(upload_to='user_images', default='head_image.jpg')
+    head_image = models.ImageField(upload_to='user_images/', default='head_image.jpg')
     gender = models.SmallIntegerField(choices=GENDER_CHOICES, default=0, verbose_name='用户性别')
     email = models.CharField(max_length=30, verbose_name='用户邮箱')
     phonenum = models.CharField(max_length=15, null=True, verbose_name='用户电话')
@@ -111,7 +115,7 @@ class UserBooks(models.Model):
 
     class Meta:
         db_table = 'userbookinfo'
-        verbose_name = '人物信息'
+        verbose_name = '用户书籍信息'
         ordering = ['-add_time']
 
     def __str__(self):
@@ -119,7 +123,7 @@ class UserBooks(models.Model):
 
     def delete_book(id):
         #删除与书籍对应的评论
-        book = UserBooks.objects.get(id=id)
+        book = UserBooks.objects.filter(id=id)
         book.delete()
 
 #准备书籍评论表信息的模块
@@ -129,11 +133,18 @@ class BookComment(models.Model):
     content = models.TextField()
     comment_time = models.DateTimeField(auto_now_add=True)
     ip_addr = models.GenericIPAddressField(verbose_name='评论者的IP')
+    root_id = models.IntegerField(default=0)#评论的最上层评论，若该评论处于最上层，则为0，
+    parent_id = models.IntegerField(default=0)# 评论的父评论，若无父评论，则为0
+    is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
 
     class Meta:
         db_table = 'commentinfo'
         verbose_name = '评论信息'
         ordering = ['-comment_time']
+
+    def delete_c(id):
+        comment = BookComment.objects.filter(id=id)
+        comment.delete()
 
     def __str__(self):
         return self.content

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>personal_information</title>
+    <link rel="stylesheet" type="text/css" href="{% static "css/login.css" %}">
+    <link REL="SHORTCUT ICON" HREF="{% static "image/favicon.ico" %}">
+    <script src="../../static/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.css">
+	<script src="../../static/js/bootstrap.min.js"></script>
+    <script src="../../static/js/kefu1.js"></script>
+</head>
+<body>
+<div class="container" id="hidebg">
+	<div class="row clearfix" disabled="disabled">
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1 align="center">
+					This is a personal information page for {{user.username}}
+				</h1>
+			</div>
+			<div class="container">
+				<div class="row clearfix">
+					<div class="col-md-12 column">
+						<div class="alert alert-dismissable alert-info">
+							 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4>
+								注意!
+							</h4> <strong>在文本框输入文本并点击提交修改按钮即会修改你的信息，不输入文本点提交信息不更改，请确保信息的准确性！</strong>  <a style="color: red" href="{% url 'book:booklist_page' %}" class="alert-link">返回主页面</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<dl class="dl-horizontal">
+            <form method="post" enctype="multipart/form-data"><!--enctype="multipart/form-data"：不能少-->
+            {% csrf_token %}
+				<h4></h4>
+                <blockquote>
+					<dt>
+						头像：
+					</dt>
+					<dd>
+						<img src="../../media/user_images/{{ user.head_image }}" width="50" height="50"/>
+                        <input name="u_icon" type="file">
+                            <!--<button id="photo" class="btn btn-danger">上传头像</button>-->
+                        <!--<button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#avatar-modal" style="margin: 10px;">修改头像</button>-->
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						用户名：
+					</dt>
+					<dd>
+						<input type="text" placeholder="{{user.username}}" name="username"/>
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						用户等级：
+					</dt>
+					<dd>
+						{{user.grade}}
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						性别：
+					</dt>
+					<dd>
+                        {% if user.gender == 1 %}
+						    <input class="myforms-3-2" type="radio" checked ="checked" name="sex" value="1">男
+                            <input class="myforms-3-3" type="radio"  name="sex" value="0">女<br>
+                        {% elif user.gender == 0 %}
+                            <input class="myforms-3-2" type="radio"  name="sex" value="1">男
+						    <input class="myforms-3-3" type="radio" checked ="checked" name="sex" value="0">女<br>
+                        {% endif %}
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						邮箱：
+					</dt>
+					<dd>
+						<input type="text" placeholder="{{ user.email }}" name="email"/>
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						电话：
+					</dt>
+					<dd>
+						<input type="text" placeholder="{{ user.phonenum }}" name="phonenum" />
+					</dd>
+				</blockquote>
+				<blockquote>
+					<dt>
+						注册时间：
+					</dt>
+					<dd>
+						{{user.user_addtime | date:'Y-m-d'}}
+					</dd>
+				</blockquote>
+				<div align="center">
+					<input class="btn btn-primary btn-large" type="submit" href="{% url 'book:personal_information_page' %}" value="提交修改">
+				</div>
+            </form>
+			</dl>
+		</div>
+	</div>
+</div>
+
+<script>
+    var kefu = new Kefu1({
+        index: "{% url 'book:home_page' %}",
+        tel: "15616697909",//电话号码
+        qq: "774472695",//在线QQ
+    });
+</script>
+</body>
+</html>
